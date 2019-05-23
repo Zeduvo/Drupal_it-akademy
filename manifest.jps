@@ -1,0 +1,34 @@
+jpsType: install
+jpsVersion: '1.1'
+name: Drupal
+
+globals:
+  DB_PASSWORD: rootpassword
+
+nodes:
+  - nodeType: apache2
+    count: 1
+    cloudlets: 4
+    nodeGroup: cp
+
+  - nodeType: mysql5
+    count: 1
+    cloudlets: 4
+    env:
+      MYSQL_PASSWORD: ${global.DB_PASSWORD}
+
+onInstall:
+  deploy: 
+    archive: https://ftp.drupal.org/files/projects/drupal-8.7.1.zip
+    name: test drupal
+    context: ROOT
+
+  prepareSqlDatabase:
+    - nodeType: mysql5
+      loginCredentials:
+        user: root
+        password: ${nodes.mysql5.password}
+      newDatabaseName: nextcloud
+      newDatabaseUser:
+        name: nextcloud
+        password: ${globals.DB_PASSWORD} 
